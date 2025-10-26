@@ -1,7 +1,7 @@
 let messages = [];
 let isLoading = false;
 let chatSessions = [];
-let currentSessionId = 0;
+let currentSessionId = crypto.randomUUID();
 
 const chatArea = document.getElementById('chatArea');
 const chatContent = document.getElementById('chatContent');
@@ -174,7 +174,7 @@ function hideLoading() {
 
 // 초기 초대 항목 등록 하기
 console.log('초기 항목 등록하기');
-const welcome_data = ['강좌 등록 하기', '강좌 문의 하기'];
+const welcome_data = ['업무 문의','스터디 접수 하기','스터디 수행 결과 보고 하기'];
 const grid = document.getElementById('welcomeGrid');
 welcome_data.forEach(data => {
     const card = document.createElement('div');
