@@ -1,4 +1,5 @@
 import os, shutil
+from datetime import datetime
 from dotenv import load_dotenv
 from fastapi import APIRouter, UploadFile, Form, File
 from typing import Annotated, Optional
@@ -35,15 +36,17 @@ async def for_student(
     print(message)
     print(file)
     # 1. 파일 로컬에 저장
-    if file:
-        file_path = os.path.join(UPLOAD_DIRECTORY, file.filename)
-        print('****** file upload ******',file_path)
+    if file and file.filename:
+        _name, _ext = os.path.splitext(file.filename)
+        _filename = f'{_name}-{datetime.today().strftime("%Y%m%d%H%M-%f")}{_ext}'
+        _file_path = os.path.join(UPLOAD_DIRECTORY, _filename)
+        print('****** file upload ******',_file_path)
         try:
-        # file.file은 UploadFile 객체 내부의 실제 파일 스트림(file-like object)입니다.
-        # shutil.copyfileobj를 사용해 파일을 복사합니다.
-            with open(file_path, "wb") as fp:
+            ## 저장될 파일명은 기존 파일명에 "%Y%m%d%H%M-%f" 붙여 생성
+            # shutil.copyfileobj를 사용해 파일을 복사합니다.
+            with open(_file_path, "wb") as fp:
                 shutil.copyfileobj(file.file, fp)
-            message = f"{message}, 업로드 파일은 {file_path} 입니다."
+            message = f"{message}, 업로드 파일은 {_filename} 입니다."
         except Exception as e:
             print(f"message: 파일 업로드 중 오류 발생: {e}")
         finally:
