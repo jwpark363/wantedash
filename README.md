@@ -7,9 +7,13 @@
     3. 스프레드시트의 특정 시트 마지막줄에 CSV 문자열 추가
     4. 파일(docx, doc) 파일 업로드
 
+
+<img src="https://raw.githubusercontent.com/jwpark363/wantedash/refs/heads/main/main.png" width=350>
+
 ### 시스템 구조
 - 프론트 : html + javascript
 - 백엔드 : fastapi, langchain, gpt 4.1, google driver tools
+<img src="https://raw.githubusercontent.com/jwpark363/wantedash/refs/heads/main/system.png">
 
 ### 역할
 - 관리자 : 구글드라이브의 기준 정보 파일 관리
