@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from routers import ai_agent
+from lib.google_util import auth, spreadsheet_to_dataframe
 
 print('start api......')
 app = FastAPI(title="WanteDash AI Agent server", vision="0.5.0")
@@ -19,6 +20,17 @@ app.add_middleware(
 @app.get("/")
 def init():
     return RedirectResponse(url="/index.html")
+
+@app.get("/jobs")
+def jobs():
+    creds = auth('./credentials.json')
+    ## .env 파일 ID 사용
+    spreadsheet_id = '1IZxUGNlvdRb6N-hIlfb3XomncdVbfkF9yLTnVUBGnAE'
+    worksheet_name = 'code'
+    df = spreadsheet_to_dataframe(creds,spreadsheet_id,worksheet_name)
+    return {
+        'jobs':df['업무'].to_list()
+    }
 
 # 라우터 등록
 app.include_router(ai_agent.router, prefix="/api", tags=["agent"])

@@ -13,3 +13,4 @@ token.json
 # Virtual environments
 .venv
 ref/
+uploads/

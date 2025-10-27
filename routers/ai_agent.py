@@ -1,19 +1,34 @@
 import os, shutil
+from dotenv import load_dotenv
 from fastapi import APIRouter, UploadFile, Form, File
 from typing import Annotated, Optional
 from pydantic import BaseModel
-from agent.general_agent import chat
+from agent.general_agent import GeneralAgent #chat, reset_agent
+from lib.google_util import auth
+from lib.prompt_generator import make_prompt
+from lib.system_prompt import GENERAL_PROMPT
 
 router = APIRouter()
 
+load_dotenv()
+project_name = 'wanted_2nd_wantedash'
+os.environ['LANGSMITH_PROJECT'] = project_name
 UPLOAD_DIRECTORY = "./uploads"
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
-class Item(BaseModel):
-    message: str
+creds_file = './credentials.json'
+creds = auth(creds_file)
+
+g_agent = GeneralAgent(creds,GENERAL_PROMPT.format(**make_prompt(creds)))
+
+@router.get("/reset")
+def reset():
+    g_agent.reset_agent(GENERAL_PROMPT.format(**make_prompt(creds)))
+    return {"result":"reset"}
 
 @router.post("/chat")
 async def for_student(
+    id: Annotated[str, Form()],
     message: Annotated[str, Form()],
     file: Annotated[Optional[UploadFile], File()] = None
 ):
@@ -35,7 +50,7 @@ async def for_student(
             file.file.close()
     # 2. 메시지에 추가 : '로컬 파일 경로' 는 '저장된 파일 패스' 입니다.
     ## 세션 처리 방법 고민 필요 -> 클라이언트에서 생성하여 전송
-    cfg = {"configurable" : {"session_id" : "student-123"}}
-    result = chat(message,cfg)
+    cfg = {"configurable" : {"session_id" : id}}
+    result = g_agent.chat(message,cfg)
     print(result)
     return result

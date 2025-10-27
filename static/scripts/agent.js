@@ -68,6 +68,7 @@ async function sendMessage() {
     
     // 폼 데이터 생성
     const formData = new FormData();
+    formData.append("id",currentSessionId);
     formData.append("message", message);
     // 선택한 파일중 마지막 파일 등록, 파일 등록이 필수 일 경우만 전송
     if(is_fileupload & messageFile.files.length > 0)

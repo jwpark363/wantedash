@@ -174,15 +174,21 @@ function hideLoading() {
 
 // 초기 초대 항목 등록 하기
 console.log('초기 항목 등록하기');
-const welcome_data = ['업무 문의','스터디 접수 하기','스터디 수행 결과 보고 하기'];
-const grid = document.getElementById('welcomeGrid');
-welcome_data.forEach(data => {
-    const card = document.createElement('div');
-    card.classList.add('example-card');
-    card.innerHTML = `<p>${data}</p>`;
-    card.addEventListener('click', function() {
-        setInput(data)
+(async () => {
+    const job_list = await fetch('http://localhost:8000/jobs').then(res => res.json());
+    console.log(job_list);
+    const grid = document.getElementById('welcomeGrid');
+    const welcome_data = ['업무 문의']
+    // welcome_data = welcome_data.concat(job_list['jobs'])
+    welcome_data.concat(job_list['jobs']).forEach(data => {
+        const card = document.createElement('div');
+        card.classList.add('example-card');
+        card.innerHTML = `<p>${data}</p>`;
+        card.addEventListener('click', function() {
+            setInput(data)
+        });
+        grid.appendChild(card);
     });
-    grid.appendChild(card);
-});
+
+})()
 
