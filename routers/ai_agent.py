@@ -40,7 +40,8 @@ def messages(id:str):
             {
                 'type':'AI' if isinstance(message, AIMessage) else 'HUMAN' if isinstance(message, HumanMessage) else 'BASE',
                 'content': message.content,
-                'conversation_id': message.conversation_id
+                'conversation_id': message.conversation_id,
+                'created_at': message.created_at
             }
         )
     # print(results)

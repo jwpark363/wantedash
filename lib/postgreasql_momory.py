@@ -47,15 +47,16 @@ class CustomMessageConverter(BaseMessageConverter):
         message_type = sql_model.type
         content = sql_model.content
         conversation_id=sql_model.conversation_id
+        created_at=sql_model.created_at
         # print(f'Custom Sql Message Converter : {sql_model.session_id}:{sql_model.conversation_id}-{message_type}:{content}')
         # 메시지 타입에 따라 적절한 BaseMessage 서브클래스로 변환
         if message_type == "human":
-            return HumanMessage(content=content,conversation_id=conversation_id)
+            return HumanMessage(content=content,conversation_id=conversation_id,created_at=created_at)
         elif message_type == "ai":
-            return AIMessage(content=content,conversation_id=conversation_id)
+            return AIMessage(content=content,conversation_id=conversation_id,created_at=created_at)
         # 기타 필요한 메시지 타입 추가
         else:
-            return BaseMessage(content=content,conversation_id=conversation_id)
+            return BaseMessage(content=content,conversation_id=conversation_id,created_at=created_at)
 
 class CustomSQLChatMessageHistory(SQLChatMessageHistory):
     def __init__(self, session_id: str, conversation_id: str, **kwargs):
