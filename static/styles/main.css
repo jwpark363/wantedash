@@ -124,7 +124,7 @@ font-size: 16px;
 
 .chat-item-text {
 flex: 1;
-font-size: 0.875rem;
+font-size: 0.8rem;
 white-space: nowrap;
 overflow: hidden;
 text-overflow: ellipsis;

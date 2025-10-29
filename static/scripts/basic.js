@@ -19,36 +19,6 @@ const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 const welcomeScreen = document.getElementById('welcomeScreen');
 
-// Initialize first session
-function newChatTitle(){
-    const now = new Date();
-    return makeChatTitle(now);
-    // const year = now.getFullYear();
-    // const month = now.getMonth() + 1; // 0부터 시작하므로 +1
-    // const date = now.getDate();
-    // const hours = now.getHours();
-    // const minutes = now.getMinutes();
-    // const seconds = now.getSeconds();
-    // return `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`
-}
-
-function makeChatTitle(_date){
-    const year = _date.getFullYear();
-    const month = _date.getMonth() + 1; // 0부터 시작하므로 +1
-    const date = _date.getDate();
-    const hours = _date.getHours();
-    const minutes = _date.getMinutes();
-    const seconds = _date.getSeconds();
-    return `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`
-}
-
-
-// chatSessions.push({
-//     id: currentSessionId,
-//     title: newChatTitle(),
-//     messages: []
-// });
-
 // Auto-resize textarea
 messageInput.addEventListener('input', function() {
     this.style.height = 'auto';
@@ -82,11 +52,12 @@ function newChat(is_first) {
         title: newChatTitle(),
         messages: []
     });
-    if(!is_first){
-        messages = [];
-        chatContent.innerHTML = '';
-        welcomeScreen.style.display = 'block';
-    }
+    chatContent.innerHTML = '';
+    welcomeScreen.style.display = 'block'
+    // if(!is_first)
+    // {
+    //     messages = [];
+    // }
     updateChatHistory();
 }
 
@@ -142,23 +113,8 @@ function clearChat() {
         }
         messages = [];
         chatContent.innerHTML = '';
-        welcomeScreen.style.display = 'block';
+        welcomeScreen.style.display = 'none'
     }
-}
-
-// Get Current Time
-function getCurrentTime() {
-    return getChatTime(new Date());
-    // return new Date().toLocaleTimeString('ko-KR', { 
-    //     hour: '2-digit', 
-    //     minute: '2-digit' 
-    // });
-}
-function getChatTime(date){
-    return date.toLocaleTimeString('ko-KR', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-    });
 }
 
 // Scroll to Bottom
@@ -168,15 +124,10 @@ function scrollToBottom() {
 
 // Add Message to UI
 function addMessageToUI(role, content, timestamp) {
-    if (welcomeScreen.style.display !== 'none') {
-        welcomeScreen.style.display = 'none';
-    }
-
+    welcomeScreen.style.display = 'none'
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${role}`;
-    
     const avatar = role === 'user' ? '👤' : '🧞';
-    
     messageDiv.innerHTML = `
         <div class="message-avatar">${avatar}</div>
         <div class="message-content-wrapper">
@@ -218,29 +169,39 @@ function hideLoading() {
 // 초기 초대 항목 등록 하기
 console.log('초기 항목 등록하기');
 // Welcome 항목
-(async () => {
-    const job_list = await fetch('http://localhost:8000/jobs').then(res => res.json());
-    console.log(job_list);
+const agent_job_list = [];
+
+function makeChatJob(last_content){
+    for(job of agent_job_list.slice(1)){
+        if(last_content.includes(job)) return job;
+    }
+    return agent_job_list[0];
+}
+//Show Welcome Screen
+function showWelcomeScreen(){
+    console.log(agent_job_list);
+    welcomeScreen.style.display = 'block';
     const grid = document.getElementById('welcomeGrid');
-    const welcome_data = ['업무 문의']
-    // welcome_data = welcome_data.concat(job_list['jobs'])
-    welcome_data.concat(job_list['jobs']).forEach(data => {
+    agent_job_list.forEach(job => {
         const card = document.createElement('div');
         card.classList.add('example-card');
-        card.innerHTML = `<p>${data}</p>`;
+        card.innerHTML = `<p>${job}</p>`;
         card.addEventListener('click', function() {
-            setInput(data)
+            setInput(job)
         });
         grid.appendChild(card);
-    });
-})();
-// chat history
+    })
+}
+
 (async () => {
-    // console.log(`http://localhost:8000/api/messages/${userSession}`)
-    const history = await fetch(`http://localhost:8000/api/messages/${userSession}`).then(res => res.json());
-    console.log("****** chat history ******")
-    console.log(history)
-    //불러온 데이터 처리
+    const job_list = await fetch_get('JOBS');
+    const welcome_data = ['업무 문의']
+    const history = await fetch_get('HISTORY',id=userSession);
+    //불러온 데이터 처리(welcome card, history list)
+    welcome_data.concat(job_list['jobs']).forEach(data => {
+        agent_job_list.push(data);
+    });
+
     if(history){
         //1 session 리스트 가져오기
         const session_list = [...new Set(history.result.map(message => message.conversation_id))]
@@ -270,12 +231,12 @@ console.log('초기 항목 등록하기');
             })
             chatSessions.push({
                 id: _id,
-                title: _chat_title,  //`히스토리 ${count}`,
+                title: makeChatJob(_messages.at(-1).content)+`( ${_chat_title} )`, //_chat_title,  //`히스토리 ${count}`,
                 messages: _messages
             });
             count ++;
         }
-        updateChatHistory();
     }
     newChat(true);
+    showWelcomeScreen();
 })();

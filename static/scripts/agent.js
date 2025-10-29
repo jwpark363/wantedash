@@ -6,7 +6,7 @@ const messageLabel = document.getElementById('messageLabel');
 const fileNameSpan = document.querySelector('.file-name');
 messageFile.addEventListener('click', function(event){
     if(!is_fileupload){
-        console.log('파일 업로드가 필수가 아닙니다.');
+        console.log('파일 업로드가 필수는 아닙니다.');
         return;
     }
     console.log('click');
@@ -81,19 +81,7 @@ async function sendMessage() {
 
     //함수호출
     try {
-        const response = await fetch('http://localhost:8000/api/chat', {
-            method: 'POST',
-            body: formData,
-            // headers: {
-            //     'Content-Type': 'application/json',
-            // },
-            // body: JSON.stringify({
-            //     message: message
-            // })
-        });
-        const data = await response.json();
-        console.log("***** result *****")
-        console.log(data);
+        const data = await fetch_post('CHAT',formData);
         hideLoading();        
         const aiTimestamp = getCurrentTime();
         addMessageToUI('assistant', data.output, aiTimestamp);
