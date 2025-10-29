@@ -1,8 +1,18 @@
+// chat의 session_id로 사용
+// 로컬 스토리지에 해당 정보 저장 후 사용
+// 저장된 값이 있으면 해당 정보 사용
+const _local_user_id = localStorage.getItem('wantedash-userid')
+const userSession = _local_user_id ? _local_user_id : 'user::'+crypto.randomUUID();
+if(_local_user_id == null){
+    localStorage.setItem('wantedash-userid', userSession)
+}
+console.log("USER SESSION ID : " + userSession)
+
 let messages = [];
 let isLoading = false;
 let chatSessions = [];
+// chat의 conversation_id로 사용
 let currentSessionId = crypto.randomUUID();
-
 const chatArea = document.getElementById('chatArea');
 const chatContent = document.getElementById('chatContent');
 const messageInput = document.getElementById('messageInput');
@@ -10,11 +20,22 @@ const sendBtn = document.getElementById('sendBtn');
 const welcomeScreen = document.getElementById('welcomeScreen');
 
 // Initialize first session
-chatSessions.push({
-    id: currentSessionId,
-    title: '새로운 대화',
-    messages: []
-});
+function newChatTitle(){
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // 0부터 시작하므로 +1
+    const date = now.getDate();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    return `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`
+}
+
+// chatSessions.push({
+//     id: currentSessionId,
+//     title: newChatTitle(),
+//     messages: []
+// });
 
 // Auto-resize textarea
 messageInput.addEventListener('input', function() {
@@ -42,16 +63,18 @@ function toggleSettings() {
 }
 
 // New Chat
-function newChat() {
-    currentSessionId = Date.now();
+function newChat(is_first) {
+    currentSessionId = crypto.randomUUID();
     chatSessions.push({
         id: currentSessionId,
-        title: '새로운 대화',
+        title: newChatTitle(),
         messages: []
     });
-    messages = [];
-    chatContent.innerHTML = '';
-    welcomeScreen.style.display = 'block';
+    if(!is_first){
+        messages = [];
+        chatContent.innerHTML = '';
+        welcomeScreen.style.display = 'block';
+    }
     updateChatHistory();
 }
 
@@ -63,7 +86,7 @@ function updateChatHistory() {
     for (let i = 0; i < reversedSessions.length; i++) {
         const session = reversedSessions[i];
         const isActive = session.id === currentSessionId ? 'active' : '';
-        html += '<div class="chat-item ' + isActive + '" onclick="loadSession(' + session.id + ')">';
+        html += '<div class="chat-item ' + isActive + '" onclick="loadSession(\'' + session.id + '\')">';
         html += '<span class="chat-item-icon">💬</span>';
         html += '<span class="chat-item-text">' + session.title + '</span>';
         html += '</div>';
@@ -73,6 +96,7 @@ function updateChatHistory() {
 
 // Load Session
 function loadSession(sessionId) {
+    console.log("loadSession : " + sessionId)
     const session = chatSessions.find(s => s.id === sessionId);
     if (session) {
         currentSessionId = sessionId;
@@ -174,6 +198,8 @@ function hideLoading() {
 
 // 초기 초대 항목 등록 하기
 console.log('초기 항목 등록하기');
+newChat(true);
+
 (async () => {
     const job_list = await fetch('http://localhost:8000/jobs').then(res => res.json());
     console.log(job_list);
@@ -189,6 +215,4 @@ console.log('초기 항목 등록하기');
         });
         grid.appendChild(card);
     });
-
 })()
-
