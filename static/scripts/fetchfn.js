@@ -20,8 +20,9 @@ async function fetch_post(key, form){
     console.log(url);
     const results = await fetch('http://localhost:8000/api/chat', {
             method: 'POST',
-            body: formData,
+            body: form,
         }).then(res => res.json());
     console.log(results)
     console.log('********** fetch **********')
+    return results;
 }

@@ -574,10 +574,10 @@ background: #4b5563;
 .mobile-toggle {
 display: none;
 position: fixed;
-top: 10px;
-left: 220px;
-width: 42px;
-height: 42px;
+top: 4px;
+left: 248px;
+width: 30px;
+height: 30px;
 background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
 opacity: 0.6;
 border: none;
@@ -604,7 +604,7 @@ z-index: 100;
 }
 
 .mobile-toggle {
-    display: none;
+    display: block;
     align-items: center;
     justify-content: center;
     z-index: 1100;
