@@ -1,0 +1,60 @@
+form_json = {
+    // 반드시 제목만 포함되어야 함
+    "info": {
+        "title": "설문 테스트",
+        "documentTitle": "설문 테스트 폼",
+    }
+}
+question_json = {
+    "requests": [
+        {
+            "updateFormInfo": {
+                "info": {
+                    "description": "이것은 2단계에서 추가된 설명입니다.",
+                },
+                // 업데이트 항목 명시 : 'description'
+                "updateMask": "description"
+            }
+        },
+        {
+            "createItem": {
+                "item":{
+                    "title": "이름을 입력하세요.",
+                    "description": "성함을 알려주세요.",
+                    "questionItem": {
+                        "question": {
+                            "required": true,
+                            "textQuestion": {
+                                "paragraph": false // False 단답형, True 장문형
+                            }
+                        }
+                    }
+                },
+                "location": {"index": 0},
+            }
+        },
+        {
+            "createItem": {
+                "item": {
+                    "title": "가장 선호하는 프로그래밍",
+                    "questionItem": {
+                        "question": {
+                            "required": false,
+                            "choiceQuestion": {
+                                "type": "RADIO",
+                                "options": [
+                                    {"value": "Python"},
+                                    {"value": "JavaScript"},
+                                    {"value": "Java"},
+                                    {"value": "기타"},
+                                ],
+                                "shuffle": true,
+                            },
+                        }
+                    },
+                },
+                "location": {"index": 1},
+            }
+        }
+    ]
+}
